@@ -50,7 +50,19 @@ open class ButtonBarView: UICollectionView {
         bar.layer.zPosition = 9999
         return bar
     }()
+    
+    open lazy var unselectedBar: UIView = {
+        let bar = UIView(frame: CGRect(x: 0, y: self.frame.size.height - CGFloat(self.unselectedBarHeight), width: self.frame.size.width, height: CGFloat(self.unselectedBarHeight)))
+        bar.layer.zPosition = 9990
+        return bar
+    }()
 
+    internal var unselectedBarHeight: CGFloat = 4 {
+        didSet {
+            updateSelectedBarYPosition()
+        }
+    }
+    
     internal var selectedBarHeight: CGFloat = 4 {
         didSet {
             updateSelectedBarYPosition()
@@ -62,14 +74,16 @@ open class ButtonBarView: UICollectionView {
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        addSubview(unselectedBar)
         addSubview(selectedBar)
     }
 
     public override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
+        addSubview(unselectedBar)
         addSubview(selectedBar)
     }
-
+    
     open func moveTo(index: Int, animated: Bool, swipeDirection: SwipeDirection, pagerScroll: PagerScroll) {
         selectedIndex = index
         updateSelectedBarPosition(animated, swipeDirection: swipeDirection, pagerScroll: pagerScroll)
@@ -170,18 +184,25 @@ open class ButtonBarView: UICollectionView {
 
     private func updateSelectedBarYPosition() {
         var selectedBarFrame = selectedBar.frame
+        var unselectedBarFrame = unselectedBar.frame
 
         switch selectedBarVerticalAlignment {
         case .top:
             selectedBarFrame.origin.y = 0
+            unselectedBarFrame.origin.y = 0
         case .middle:
             selectedBarFrame.origin.y = (frame.size.height - selectedBarHeight) / 2
+            unselectedBarFrame.origin.y = (frame.size.height - selectedBarHeight) / 2
         case .bottom:
             selectedBarFrame.origin.y = frame.size.height - selectedBarHeight
+            unselectedBarFrame.origin.y = frame.size.height - selectedBarHeight
         }
 
         selectedBarFrame.size.height = selectedBarHeight
         selectedBar.frame = selectedBarFrame
+        
+        unselectedBarFrame.size.height = selectedBarHeight
+        unselectedBar.frame = unselectedBarFrame
     }
 
     override open func layoutSubviews() {

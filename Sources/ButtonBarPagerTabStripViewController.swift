@@ -50,6 +50,8 @@ public struct ButtonBarPagerTabStripSettings {
 
         public var selectedBarBackgroundColor = UIColor.black
         public var selectedBarHeight: CGFloat = 5
+        public var unselectedBarHeight: CGFloat = 5
+        public var unselectedBarBackgroundColor = UIColor.black
         public var selectedBarVerticalAlignment: SelectedBarVerticalAlignment = .bottom
 
         public var buttonBarItemBackgroundColor: UIColor?
@@ -98,6 +100,8 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
         delegate = self
         datasource = self
     }
+    
+   
 
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -118,6 +122,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
                 buttonBar.backgroundColor = .orange
                 buttonBar.selectedBar.backgroundColor = .black
                 buttonBar.autoresizingMask = .flexibleWidth
+                buttonBar.unselectedBar.backgroundColor = .black
                 var newContainerViewFrame = containerView.frame
                 newContainerViewFrame.origin.y = buttonBarHeight
                 newContainerViewFrame.size.height = containerView.frame.size.height - (buttonBarHeight - containerView.frame.origin.y)
@@ -146,8 +151,10 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
         buttonBarView.showsHorizontalScrollIndicator = false
         buttonBarView.backgroundColor = settings.style.buttonBarBackgroundColor ?? buttonBarView.backgroundColor
         buttonBarView.selectedBar.backgroundColor = settings.style.selectedBarBackgroundColor
+        buttonBarView.unselectedBar.backgroundColor = settings.style.unselectedBarBackgroundColor
 
         buttonBarView.selectedBarHeight = settings.style.selectedBarHeight
+        buttonBarView.unselectedBarHeight = settings.style.unselectedBarHeight
         buttonBarView.selectedBarVerticalAlignment = settings.style.selectedBarVerticalAlignment
 
         // register button bar item cell
@@ -157,6 +164,8 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
         case .cellClass:
             buttonBarView.register(ButtonBarViewCell.self, forCellWithReuseIdentifier:"Cell")
         }
+        
+        
         //-
     }
 
@@ -315,6 +324,7 @@ open class ButtonBarPagerTabStripViewController: PagerTabStripViewController, Pa
         let indicatorInfo = childController.indicatorInfo(for: self)
 
         cell.label.text = indicatorInfo.title
+        cell.label.numberOfLines = 0
         cell.label.font = settings.style.buttonBarItemFont
         cell.label.textColor = settings.style.buttonBarItemTitleColor ?? cell.label.textColor
         cell.contentView.backgroundColor = settings.style.buttonBarItemBackgroundColor ?? cell.contentView.backgroundColor

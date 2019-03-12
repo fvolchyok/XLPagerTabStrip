@@ -86,7 +86,11 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
     override open func viewDidLoad() {
         super.viewDidLoad()
         let conteinerViewAux = containerView ?? {
-            let containerView = UIScrollView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+            var containerHeight = view.bounds.height
+            if #available(iOS 11, *), let parent = parent {
+                containerHeight -= parent.view.safeAreaInsets.bottom
+            }
+            let containerView = UIScrollView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: containerHeight))
             containerView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             return containerView
         }()
@@ -94,8 +98,8 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
         if containerView.superview == nil {
             view.addSubview(containerView)
         }
-        containerView.bounces = true
-        containerView.alwaysBounceHorizontal = true
+        containerView.bounces = false
+        containerView.alwaysBounceHorizontal = false
         containerView.alwaysBounceVertical = false
         containerView.scrollsToTop = false
         containerView.delegate = self
@@ -247,7 +251,8 @@ open class PagerTabStripViewController: UIViewController, UIScrollViewDelegate {
                 } else {
                     childController.beginAppearanceTransition(true, animated: false)
                     addChildViewController(childController)
-                    childController.view.frame = CGRect(x: offsetForChild(at: index), y: 0, width: view.bounds.width, height: containerView.bounds.height)
+                    let frame = CGRect(x: offsetForChild(at: index), y: 0, width: view.bounds.width, height: containerView.bounds.height)
+                    childController.view.frame = frame
                     childController.view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
                     containerView.addSubview(childController.view)
                     childController.didMove(toParentViewController: self)
